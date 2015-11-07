@@ -4,10 +4,10 @@ var bodyParser = require('body-parser');
 var parameterize = require('parameterize');
 var serialport = require("serialport");
 
-var app = express()
-app.use(bodyParser.urlencoded({ extended: false }))
-var logFormat = "'[:date[iso]] - :remote-addr - :method :url :status :response-time ms - :res[content-length]b'"
-app.use(morgan(logFormat))
+var app = express();
+app.use(bodyParser.json());
+var logFormat = "'[:date[iso]] - :remote-addr - :method :url :status :response-time ms - :res[content-length]b'";
+app.use(morgan(logFormat));
 
 var SerialPort = serialport.SerialPort;
 var connection = new SerialPort("/dev/ttyUSB0", {
@@ -16,22 +16,16 @@ var connection = new SerialPort("/dev/ttyUSB0", {
 });
 
 
-var zones = {};
-
-app.get('/zones', function(req, res){
-  var zoneArray = new Array;
-  for(var o in zones) {
-    zoneArray.push(zones[o]);
-  }
-  res.json(zoneArray);
-});
-
-app.get('/zones/:zone', function(req, res){
-  res.json(zones[req.params.zone]);
-});
-
 connection.on("open", function () {
+
+  var zones = {};
+
+  connection.write("?10\r");
+  connection.write("?20\r");
+  connection.write("?30\r");
+
   connection.on('data', function(data) {
+    console.log(data);
     var zone = data.match(/#>(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
     if (zone != null) {
       zones[zone[1]] = {
@@ -50,9 +44,27 @@ connection.on("open", function () {
     }
   });
 
-  connection.write("?10\r");
-  connection.write("?20\r");
-  connection.write("?30\r");
+  app.get('/zones', function(req, res) {
+    var zoneArray = new Array;
+    for(var o in zones) {
+      zoneArray.push(zones[o]);
+    }
+    res.json(zoneArray);
+  });
+
+  app.get('/zones/:zone', function(req, res) {
+    res.json(zones[req.params.zone]);
+  });
+
+  app.put('/zones/:zone', function(req, res) {
+    connection.write("<"+req.params.zone+req.body.action+req.body.value+"\r");
+    connection.write("?10\r");
+    connection.write("?20\r");
+    connection.write("?30\r");
+    var hash = {}
+    hash[req.body.action] = req.body.value;
+    res.json(hash);
+  });
 
   app.listen(process.env.PORT || 8181);
 });
