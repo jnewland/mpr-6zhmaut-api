@@ -18,13 +18,17 @@ var connection = new SerialPort("/dev/ttyUSB0", {
 
 var zones = {};
 
-app.get('/', function(req, res){
+app.get('/zones', function(req, res){
   var zoneArray = new Array;
   for(var o in zones) {
     zoneArray.push(zones[o]);
   }
   res.json(zoneArray);
-})
+});
+
+app.get('/zones/:zone', function(req, res){
+  res.json(zones[req.params.zone]);
+});
 
 connection.on("open", function () {
   connection.on('data', function(data) {
