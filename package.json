@@ -1,0 +1,24 @@
+{
+  "name": "mpr-6zhmaut-api",
+  "version": "0.0.1",
+  "description": "REST API for the Monoprice MPR-6ZHMAUT Home Audio Distribution SYstem",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jnewland/mpr-6zhmaut-api"
+  },
+  "author": "Jesse Newland <jesse@jnewland.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jnewland/mpr-6zhmaut-api/issues"
+  },
+  "dependencies": {
+    "express": "^4.12.4",
+    "morgan": "^1.6.1",
+    "body-parser": "^1.12.4",
+    "parameterize": "^0.0.7",
+    "serialport": "^2.0.2"
+  }
+}
