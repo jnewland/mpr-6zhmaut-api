@@ -36,7 +36,7 @@ connection.on("open", function () {
         "treble": zone[7],
         "bass": zone[8],
         "balance": zone[9],
-        "source": zone[10],
+        "channel": zone[10],
         "keypad": zone[11]
       };
     }
