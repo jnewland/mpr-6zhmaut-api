@@ -7,7 +7,7 @@ var async      = require("async");
 var app = express();
 var logFormat = "'[:date[iso]] - :remote-addr - :method :url :status :response-time ms - :res[content-length]b'";
 app.use(morgan(logFormat));
-app.use(bodyParser.json());
+app.use(bodyParser.text({type: '*/*'}));
 
 var SerialPort = serialport.SerialPort;
 var connection = new SerialPort("/dev/ttyUSB0", {
@@ -64,7 +64,7 @@ connection.on("open", function () {
       req.zone = zone;
       next();
     } else {
-      next(new Error(zone + ' is not a valid zone'));
+      res.status(500).send({ error: zone + ' is not a valid zone'});
     }
   });
 
@@ -80,9 +80,56 @@ connection.on("open", function () {
     );
   });
 
-  app.put('/zones/:zone', function(req, res) {
+  // Validate and standarize control actions
+  app.param('action', function(req, res, next, action) {
+    if (typeof action !== 'string') {
+      res.status(500).send({ error: action + ' is not a valid zone control action'});
+    }
+    switch(action.toLowerCase()) {
+      case "pa":
+        req.action = "pa";
+        break;
+      case "pr":
+      case "power":
+        req.action = "pr";
+        break;
+      case "mu":
+      case "mute":
+        req.action = "mu";
+        break;
+      case "dt":
+        req.action = "dt";
+        break;
+      case "vo":
+      case "volume":
+        req.action = "vo";
+        break;
+      case "tr":
+      case "treble":
+        req.action = "tr";
+        break;
+      case "bs":
+      case "bass":
+        req.action = "bs";
+        break;
+      case "bl":
+      case "balance":
+        req.action = "bl";
+        break;
+      case "ch":
+      case "channel":
+      case "source":
+        req.action = "ch";
+        break;
+      default:
+        res.status(500).send({ error: action + ' is not a valid zone control action'});
+    }
+    next();
+  });
+
+  app.put('/zones/:zone/:action', function(req, res) {
     zones[req.zone] = undefined;
-    connection.write("<"+req.zone+req.body.action+req.body.value+"\r");
+    connection.write("<"+req.zone+req.action+req.body+"\r");
     connection.write("?10\r");
     connection.write("?20\r");
     connection.write("?30\r");
