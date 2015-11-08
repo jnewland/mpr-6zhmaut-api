@@ -88,43 +88,51 @@ connection.on("open", function () {
     switch(action.toLowerCase()) {
       case "pa":
         req.action = "pa";
+        next();
         break;
       case "pr":
       case "power":
         req.action = "pr";
+        next();
         break;
       case "mu":
       case "mute":
         req.action = "mu";
+        next();
         break;
       case "dt":
         req.action = "dt";
+        next();
         break;
       case "vo":
       case "volume":
         req.action = "vo";
+        next();
         break;
       case "tr":
       case "treble":
         req.action = "tr";
+        next();
         break;
       case "bs":
       case "bass":
         req.action = "bs";
+        next();
         break;
       case "bl":
       case "balance":
         req.action = "bl";
+        next();
         break;
       case "ch":
       case "channel":
       case "source":
         req.action = "ch";
+        next();
         break;
       default:
         res.status(500).send({ error: action + ' is not a valid zone control action'});
     }
-    next();
   });
 
   app.put('/zones/:zone/:action', function(req, res) {
