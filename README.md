@@ -8,7 +8,7 @@ Monoprice sells this wacky [6 zone amp](https://www.monoprice.com/product?p_id=1
 
 ## Running the server
 
-    npm start
+    PORT=8181 npm start
 
 ### API
 
