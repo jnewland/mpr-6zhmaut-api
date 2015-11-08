@@ -58,31 +58,41 @@ connection.on("open", function () {
     );
   });
 
+  // Only allow query and control of single zones
+  app.param('zone', function(req, res, next, zone) {
+    if (zone % 10 > 0 && Number(zone) != "NaN") {
+      req.zone = zone;
+      next();
+    } else {
+      next(new Error(zone + ' is not a valid zone'));
+    }
+  });
+
   app.get('/zones/:zone', function(req, res) {
     async.until(
-      function () { return typeof zones[req.params.zone] !== "undefined"; },
+      function () { return typeof zones[req.zone] !== "undefined"; },
       function (callback) {
         setTimeout(callback, 10);
       },
       function () {
-        res.json(zones[req.params.zone]);
+        res.json(zones[req.zone]);
       }
     );
   });
 
   app.put('/zones/:zone', function(req, res) {
-    zones[req.params.zone] = undefined;
-    connection.write("<"+req.params.zone+req.body.action+req.body.value+"\r");
+    zones[req.zone] = undefined;
+    connection.write("<"+req.zone+req.body.action+req.body.value+"\r");
     connection.write("?10\r");
     connection.write("?20\r");
     connection.write("?30\r");
     async.until(
-      function () { return typeof zones[req.params.zone] !== "undefined"; },
+      function () { return typeof zones[req.zone] !== "undefined"; },
       function (callback) {
         setTimeout(callback, 10);
       },
       function () {
-        res.json(zones[req.params.zone]);
+        res.json(zones[req.zone]);
       }
     );
   });
