@@ -50,8 +50,8 @@ connection.on("open", function () {
       },
       function () {
         var zoneArray = new Array;
-        for(var o in z) {
-          zoneArray.push(z[o]);
+        for(var o in zones) {
+          zoneArray.push(zones[o]);
         }
         res.json(zoneArray);
       }
