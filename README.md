@@ -117,7 +117,7 @@ Returns the current status of a specific zone.
 }
 ```
 
-#### PUT /zones/:zone/:action
+#### POST /zones/:zone/:action
 
 Sends the specified control action to the given zone using the plain-text value of the body. Valid control actions are:
 
@@ -136,7 +136,7 @@ Here's an example where we turn the bass of zone 11 up:
 ```
 $ curl 192.168.1.254:8181/zones/11
 {"zone":"11","pa":"00","power":"01","mute":"00","dt":"00","volume":"20","treble":"10","bass":"10","balance":"10","channel":"01","keypad":"00"} 
-$ curl -X PUT -d '12' 192.168.1.254:8181/zones/11/bass
+$ curl -X POST -d '12' 192.168.1.254:8181/zones/11/bass
 {"zone":"11","pa":"00","power":"01","mute":"00","dt":"00","volume":"20","treble":"10","bass":"12","balance":"10","channel":"01","keypad":"00"}
 ```
 

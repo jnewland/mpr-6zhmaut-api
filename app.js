@@ -135,7 +135,7 @@ connection.on("open", function () {
     }
   });
 
-  app.put('/zones/:zone/:action', function(req, res) {
+  app.post('/zones/:zone/:action', function(req, res) {
     zones[req.zone] = undefined;
     connection.write("<"+req.zone+req.action+req.body+"\r");
     connection.write("?10\r");
