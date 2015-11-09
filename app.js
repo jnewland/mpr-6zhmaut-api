@@ -29,15 +29,15 @@ connection.on("open", function () {
       zones[zone[1]] = {
         "zone": zone[1],
         "pa": zone[2],
-        "power": zone[3],
-        "mute": zone[4],
+        "pr": zone[3],
+        "mu": zone[4],
         "dt": zone[5],
-        "volume": zone[6],
-        "treble": zone[7],
-        "bass": zone[8],
-        "balance": zone[9],
-        "channel": zone[10],
-        "keypad": zone[11]
+        "vo": zone[6],
+        "tr": zone[7],
+        "bs": zone[8],
+        "bl": zone[9],
+        "ch": zone[10],
+        "ls": zone[11]
       };
     }
   });
@@ -80,64 +80,69 @@ connection.on("open", function () {
     );
   });
 
-  // Validate and standarize control actions
-  app.param('action', function(req, res, next, action) {
-    if (typeof action !== 'string') {
-      res.status(500).send({ error: action + ' is not a valid zone control action'});
+  // Validate and standarize control attributes
+  app.param('attribute', function(req, res, next, attribute) {
+    if (typeof attribute !== 'string') {
+      res.status(500).send({ error: attribute + ' is not a valid zone control attribute'});
     }
-    switch(action.toLowerCase()) {
+    switch(attribute.toLowerCase()) {
       case "pa":
-        req.action = "pa";
+        req.attribute = "pa";
         next();
         break;
       case "pr":
       case "power":
-        req.action = "pr";
+        req.attribute = "pr";
         next();
         break;
       case "mu":
       case "mute":
-        req.action = "mu";
+        req.attribute = "mu";
         next();
         break;
       case "dt":
-        req.action = "dt";
+        req.attribute = "dt";
         next();
         break;
       case "vo":
       case "volume":
-        req.action = "vo";
+        req.attribute = "vo";
         next();
         break;
       case "tr":
       case "treble":
-        req.action = "tr";
+        req.attribute = "tr";
         next();
         break;
       case "bs":
       case "bass":
-        req.action = "bs";
+        req.attribute = "bs";
         next();
         break;
       case "bl":
       case "balance":
-        req.action = "bl";
+        req.attribute = "bl";
         next();
         break;
       case "ch":
       case "channel":
       case "source":
-        req.action = "ch";
+        req.attribute = "ch";
+        next();
+        break;
+      case "ls":
+      case "keypad":
+        req.attribute = "ls";
         next();
         break;
       default:
-        res.status(500).send({ error: action + ' is not a valid zone control action'});
+        res.status(500).send({ error: attribute + ' is not a valid zone control attribute'});
     }
   });
 
-  app.post('/zones/:zone/:action', function(req, res) {
+  app.post('/zones/:zone/:attribute', function(req, res) {
     zones[req.zone] = undefined;
-    connection.write("<"+req.zone+req.action+req.body+"\r");
+    connection.write("<"+req.zone+req.attribute+req.body+"\r");
     connection.write("?10\r");
     connection.write("?20\r");
     connection.write("?30\r");
@@ -152,7 +157,7 @@ connection.on("open", function () {
     );
   });
 
-  app.get('/zones/:zone/:action', function(req, res) {
+  app.get('/zones/:zone/:attribute', function(req, res) {
     zones[req.zone] = undefined;
     connection.write("?10\r");
     connection.write("?20\r");
@@ -163,7 +168,7 @@ connection.on("open", function () {
         setTimeout(callback, 10);
       },
       function () {
-        res.json(zones[req.zone][req.action]);
+        res.send(zones[req.zone][req.attribute]);
       }
     );
   });

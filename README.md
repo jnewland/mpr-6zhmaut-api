@@ -19,80 +19,80 @@ Monoprice sells this wacky [6 zone amp](https://www.monoprice.com/product?p_id=1
   {
     "zone": "11",
     "pa": "00",
-    "power": "01",
-    "mute": "00",
+    "pr": "01",
+    "mu": "00",
     "dt": "00",
-    "volume": "20",
-    "treble": "10",
-    "bass": "10",
-    "balance": "10",
-    "channel": "01",
-    "keypad": "00"
+    "vo": "15",
+    "tr": "10",
+    "bs": "10",
+    "bl": "10",
+    "ch": "01",
+    "ls": "00"
   },
   {
     "zone": "12",
     "pa": "00",
-    "power": "01",
-    "mute": "00",
+    "pr": "01",
+    "mu": "00",
     "dt": "00",
-    "volume": "20",
-    "treble": "07",
-    "bass": "07",
-    "balance": "10",
-    "channel": "01",
-    "keypad": "00"
+    "vo": "15",
+    "tr": "10",
+    "bs": "10",
+    "bl": "10",
+    "ch": "01",
+    "ls": "00"
   },
   {
     "zone": "13",
     "pa": "00",
-    "power": "01",
-    "mute": "00",
+    "pr": "01",
+    "mu": "00",
     "dt": "00",
-    "volume": "20",
-    "treble": "07",
-    "bass": "07",
-    "balance": "10",
-    "channel": "01",
-    "keypad": "00"
+    "vo": "15",
+    "tr": "10",
+    "bs": "10",
+    "bl": "10",
+    "ch": "01",
+    "ls": "00"
   },
   {
     "zone": "14",
     "pa": "00",
-    "power": "01",
-    "mute": "00",
+    "pr": "01",
+    "mu": "00",
     "dt": "00",
-    "volume": "20",
-    "treble": "07",
-    "bass": "07",
-    "balance": "10",
-    "channel": "01",
-    "keypad": "00"
+    "vo": "10",
+    "tr": "10",
+    "bs": "12",
+    "bl": "10",
+    "ch": "02",
+    "ls": "00"
   },
   {
     "zone": "15",
     "pa": "00",
-    "power": "01",
-    "mute": "00",
+    "pr": "01",
+    "mu": "00",
     "dt": "00",
-    "volume": "20",
-    "treble": "07",
-    "bass": "07",
-    "balance": "10",
-    "channel": "01",
-    "keypad": "00"
+    "vo": "20",
+    "tr": "07",
+    "bs": "07",
+    "bl": "10",
+    "ch": "01",
+    "ls": "00"
   },
   {
     "zone": "16",
     "pa": "00",
-    "power": "01",
-    "mute": "00",
+    "pr": "01",
+    "mu": "00",
     "dt": "00",
-    "volume": "21",
-    "treble": "07",
-    "bass": "07",
-    "balance": "10",
-    "channel": "01",
-    "keypad": "00"
+    "vo": "21",
+    "tr": "07",
+    "bs": "07",
+    "bl": "10",
+    "ch": "01",
+    "ls": "00"
   }
 ]
 ```
@@ -105,26 +105,45 @@ Returns the current status of a specific zone.
 {
   "zone": "11",
   "pa": "00",
-  "power": "01",
-  "mute": "00",
+  "pr": "01",
+  "mu": "00",
   "dt": "00",
-  "volume": "20",
-  "treble": "10",
-  "bass": "10",
-  "balance": "10",
-  "channel": "01",
-  "keypad": "00"
+  "vo": "15",
+  "tr": "10",
+  "bs": "10",
+  "bl": "10",
+  "ch": "01",
+  "ls": "00"
 }
 ```
 
-#### POST /zones/:zone/:action
+#### GET /zones/:zone/:attribute
 
-Sends the specified control action to the given zone using the plain-text value of the body. Valid control actions are:
+Return the value of a specific attribute in a zone as plain text.
+Valid attributes are:
 
-    pa
+    pa (send zone 1 to all outputs)
     power / pr
     mute / mu
-    dt
+    dt (??)
+    volume / vo
+    treble / tr
+    bass / bs
+    balance / bl
+    channel / source / ch
+    keypad status / ls
+
+    $ curl 192.168.1.254:8181/zones/11/bass
+    10
+
+#### POST /zones/:zone/:attribute
+
+Update a zone's attribute using the plain-text value of the body.
+
+    pa (send zone 1 to all outputs)
+    power / pr
+    mute / mu
+    dt (??)
     volume / vo
     treble / tr
     bass / bs
@@ -135,9 +154,9 @@ Here's an example where we turn the bass of zone 11 up:
 
 ```
 $ curl 192.168.1.254:8181/zones/11
-{"zone":"11","pa":"00","power":"01","mute":"00","dt":"00","volume":"20","treble":"10","bass":"10","balance":"10","channel":"01","keypad":"00"} 
+{"zone":"11","pa":"00","pr":"01","mu":"00","dt":"00","vo":"15","tr":"10","bs":"10","bl":"10","ch":"01","ls":"00"}
 $ curl -X POST -d '12' 192.168.1.254:8181/zones/11/bass
-{"zone":"11","pa":"00","power":"01","mute":"00","dt":"00","volume":"20","treble":"10","bass":"12","balance":"10","channel":"01","keypad":"00"}
+{"zone":"11","pa":"00","pr":"01","mu":"00","dt":"00","vo":"15","tr":"10","bs":"12","bl":"10","ch":"01","ls":"00"}
 ```
 
 ### Contributions
