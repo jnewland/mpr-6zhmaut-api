@@ -152,6 +152,22 @@ connection.on("open", function () {
     );
   });
 
+  app.get('/zones/:zone/:action', function(req, res) {
+    zones[req.zone] = undefined;
+    connection.write("?10\r");
+    connection.write("?20\r");
+    connection.write("?30\r");
+    async.until(
+      function () { return typeof zones[req.zone] !== "undefined"; },
+      function (callback) {
+        setTimeout(callback, 10);
+      },
+      function () {
+        res.json(zones[req.zone][req.action]);
+      }
+    );
+  });
+
   app.listen(process.env.PORT || 8181);
 });
 
