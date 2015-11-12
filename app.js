@@ -10,7 +10,8 @@ app.use(morgan(logFormat));
 app.use(bodyParser.text({type: '*/*'}));
 
 var SerialPort = serialport.SerialPort;
-var connection = new SerialPort("/dev/ttyUSB0", {
+var device     = process.env.DEVICE || "/dev/ttyUSB0";
+var connection = new SerialPort(device, {
   baudrate: 9600,
   parser: serialport.parsers.readline("\n")
 });
