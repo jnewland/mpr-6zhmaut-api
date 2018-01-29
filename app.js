@@ -24,6 +24,12 @@ connection.on("open", function () {
   AmpCount >= 2 && connection.write("?20\r");
   AmpCount >= 3 && connection.write("?30\r");
 
+  UseCORS && app.use(function(req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        next();
+  });
+
   connection.on('data', function(data) {
     console.log(data);
     var zone = data.match(/#>(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
