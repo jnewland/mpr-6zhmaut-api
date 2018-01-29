@@ -9,6 +9,7 @@ var logFormat = "'[:date[iso]] - :remote-addr - :method :url :status :response-t
 app.use(morgan(logFormat));
 app.use(bodyParser.text({type: '*/*'}));
 
+const UseCORS  = /^true$/i.test(process.env.CORS);
 const AmpCount = process.env.AMPCOUNT || 1;
 var SerialPort = serialport.SerialPort;
 var device     = process.env.DEVICE || "/dev/ttyUSB0";
