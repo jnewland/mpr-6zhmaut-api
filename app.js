@@ -9,6 +9,7 @@ var logFormat = "'[:date[iso]] - :remote-addr - :method :url :status :response-t
 app.use(morgan(logFormat));
 app.use(bodyParser.text({type: '*/*'}));
 
+const UseCORS  = /^true$/i.test(process.env.CORS);
 var SerialPort = serialport.SerialPort;
 var device     = process.env.DEVICE || "/dev/ttyUSB0";
 var connection = new SerialPort(device, {
@@ -22,6 +23,12 @@ connection.on("open", function () {
   connection.write("?10\r");
   connection.write("?20\r");
   connection.write("?30\r");
+
+  UseCORS && app.use(function(req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        next();
+  });
 
   connection.on('data', function(data) {
     console.log(data);
