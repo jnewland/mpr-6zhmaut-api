@@ -9,7 +9,9 @@ var logFormat = "'[:date[iso]] - :remote-addr - :method :url :status :response-t
 app.use(morgan(logFormat));
 app.use(bodyParser.text({type: '*/*'}));
 
+const ReQuery  = /^true$/i.test(process.env.REQUERY);
 const UseCORS  = /^true$/i.test(process.env.CORS);
+const AmpCount = process.env.AMPCOUNT || 1;
 var SerialPort = serialport.SerialPort;
 var device     = process.env.DEVICE || "/dev/ttyUSB0";
 var connection = new SerialPort(device, {
@@ -21,8 +23,8 @@ connection.on("open", function () {
   var zones = {};
 
   connection.write("?10\r");
-  connection.write("?20\r");
-  connection.write("?30\r");
+  AmpCount >= 2 && connection.write("?20\r");
+  AmpCount >= 3 && connection.write("?30\r");
 
   UseCORS && app.use(function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
@@ -51,13 +53,22 @@ connection.on("open", function () {
   });
 
   app.get('/zones', function(req, res) {
+    var zoneCount = Object.keys(zones).length;
+    if (ReQuery) {
+      zones = {};
+      connection.write("?10\r");
+      AmpCount >= 2 && connection.write("?20\r");
+      AmpCount >= 3 && connection.write("?30\r");
+    }
     async.until(
-      function () { return typeof zones !== "undefined"; },
+      function () {
+          return (typeof zones !== "undefined" && Object.keys(zones).length === zoneCount);
+        },
       function (callback) {
         setTimeout(callback, 10);
       },
       function () {
-        var zoneArray = new Array;
+        var zoneArray = [];
         for(var o in zones) {
           zoneArray.push(zones[o]);
         }
@@ -152,8 +163,8 @@ connection.on("open", function () {
     zones[req.zone] = undefined;
     connection.write("<"+req.zone+req.attribute+req.body+"\r");
     connection.write("?10\r");
-    connection.write("?20\r");
-    connection.write("?30\r");
+    AmpCount >= 2 && connection.write("?20\r");
+    AmpCount >= 3 && connection.write("?30\r");
     async.until(
       function () { return typeof zones[req.zone] !== "undefined"; },
       function (callback) {
@@ -168,8 +179,8 @@ connection.on("open", function () {
   app.get('/zones/:zone/:attribute', function(req, res) {
     zones[req.zone] = undefined;
     connection.write("?10\r");
-    connection.write("?20\r");
-    connection.write("?30\r");
+    AmpCount >= 2 && connection.write("?20\r");
+    AmpCount >= 3 && connection.write("?30\r");
     async.until(
       function () { return typeof zones[req.zone] !== "undefined"; },
       function (callback) {
