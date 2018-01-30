@@ -6,9 +6,23 @@ Monoprice sells this wacky [6 zone amp](https://www.monoprice.com/product?p_id=1
 
     npm install
 
+## Environment Variables
+
+`PORT = <integer>` - port for API to listen on (defaults to 8181)
+
+`AMPCOUNT = <1|2|3>` - the number of amps (you can slave up to two additional amps) (defaults to 1)
+
+`REQUERY = <true|false>` - re-query the keypads before responding to a /zones request (defaults to false)
+
+`CORS = <true|false>` - respond to a CORS request with an `Access-Control-Allow-Origin=*` (defaults to false)
+
 ## Running the server
 
     PORT=8181 npm start
+
+or using more environment variables:
+
+    PORT=8181 AMPCOUNT=2 REQUERY=false CORS=false npm start
 
 ### API
 

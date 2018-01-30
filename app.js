@@ -9,6 +9,7 @@ var logFormat = "'[:date[iso]] - :remote-addr - :method :url :status :response-t
 app.use(morgan(logFormat));
 app.use(bodyParser.text({type: '*/*'}));
 
+const ReQuery  = /^true$/i.test(process.env.REQUERY);
 const UseCORS  = /^true$/i.test(process.env.CORS);
 const AmpCount = process.env.AMPCOUNT || 1;
 var SerialPort = serialport.SerialPort;
@@ -52,13 +53,22 @@ connection.on("open", function () {
   });
 
   app.get('/zones', function(req, res) {
+    var zoneCount = Object.keys(zones).length;
+    if (ReQuery) {
+      zones = {};
+      connection.write("?10\r");
+      AmpCount >= 2 && connection.write("?20\r");
+      AmpCount >= 3 && connection.write("?30\r");
+    }
     async.until(
-      function () { return typeof zones !== "undefined"; },
+      function () {
+          return (typeof zones !== "undefined" && Object.keys(zones).length === zoneCount);
+        },
       function (callback) {
         setTimeout(callback, 10);
       },
       function () {
-        var zoneArray = new Array;
+        var zoneArray = [];
         for(var o in zones) {
           zoneArray.push(zones[o]);
         }
