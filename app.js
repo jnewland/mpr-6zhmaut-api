@@ -1,8 +1,9 @@
 var express    = require("express");
 var morgan     = require("morgan");
 var bodyParser = require("body-parser");
-var serialport = require("serialport");
+var SerialPort = require("serialport");
 var async      = require("async");
+var Readline   = require('@serialport/parser-readline')
 
 var app = express();
 var logFormat = "'[:date[iso]] - :remote-addr - :method :url :status :response-time ms - :res[content-length]b'";
@@ -12,12 +13,13 @@ app.use(bodyParser.text({type: '*/*'}));
 const ReQuery  = /^true$/i.test(process.env.REQUERY);
 const UseCORS  = /^true$/i.test(process.env.CORS);
 const AmpCount = process.env.AMPCOUNT || 1;
-var SerialPort = serialport.SerialPort;
 var device     = process.env.DEVICE || "/dev/ttyUSB0";
 var connection = new SerialPort(device, {
-  baudrate: 9600,
-  parser: serialport.parsers.readline("\n")
+  baudRate: 9600
 });
+
+var parser = new Readline({ delimiter: '\n' });
+connection.pipe(parser);
 
 connection.on("open", function () {
   var zones = {};
@@ -32,7 +34,7 @@ connection.on("open", function () {
         next();
   });
 
-  connection.on('data', function(data) {
+  parser.on('data', function(data) {
     console.log(data);
     var zone = data.match(/#>(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
     if (zone != null) {
@@ -194,5 +196,3 @@ connection.on("open", function () {
 
   app.listen(process.env.PORT || 8181);
 });
-
-
