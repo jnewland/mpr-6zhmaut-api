@@ -1,7 +1,6 @@
 var express    = require("express");
 var morgan     = require("morgan");
 var bodyParser = require("body-parser");
-var serialport = require("serialport");
 var async      = require("async");
 
 var app = express();
@@ -12,12 +11,15 @@ app.use(bodyParser.text({type: '*/*'}));
 const ReQuery  = /^true$/i.test(process.env.REQUERY);
 const UseCORS  = /^true$/i.test(process.env.CORS);
 const AmpCount = process.env.AMPCOUNT || 1;
-var SerialPort = serialport.SerialPort;
+const SerialPort = require("serialport");
+const Readline   = require('@serialport/parser-readline')
+
 var device     = process.env.DEVICE || "/dev/ttyUSB0";
 var connection = new SerialPort(device, {
-  baudrate: 9600,
-  parser: serialport.parsers.readline("\n")
+  baudRate: 9600,
 });
+
+const parser = connection.pipe(new Readline({delimiter: "\n",encoding:"ascii"}))
 
 connection.on("open", function () {
   var zones = {};
@@ -32,9 +34,9 @@ connection.on("open", function () {
         next();
   });
 
-  connection.on('data', function(data) {
-    console.log(data);
-    var zone = data.match(/#>(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
+  parser.on('data', function(data) {
+    console.log('data: '+data);
+    var zone = data.toString("ascii").match(/#>(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
     if (zone != null) {
       zones[zone[1]] = {
         "zone": zone[1],
@@ -61,8 +63,8 @@ connection.on("open", function () {
       AmpCount >= 3 && connection.write("?30\r");
     }
     async.until(
-      function () {
-          return (typeof zones !== "undefined" && Object.keys(zones).length === zoneCount);
+      function (callback) {
+          callback(typeof zones !== "undefined" && Object.keys(zones).length === zoneCount);
         },
       function (callback) {
         setTimeout(callback, 10);
@@ -89,7 +91,7 @@ connection.on("open", function () {
 
   app.get('/zones/:zone', function(req, res) {
     async.until(
-      function () { return typeof zones[req.zone] !== "undefined"; },
+      function (callback) { callback(typeof zones[req.zone] !== "undefined"); },
       function (callback) {
         setTimeout(callback, 10);
       },
@@ -166,7 +168,7 @@ connection.on("open", function () {
     AmpCount >= 2 && connection.write("?20\r");
     AmpCount >= 3 && connection.write("?30\r");
     async.until(
-      function () { return typeof zones[req.zone] !== "undefined"; },
+      function (callback) { callback(null,typeof zones[req.zone] !== "undefined"); },
       function (callback) {
         setTimeout(callback, 10);
       },
@@ -182,7 +184,7 @@ connection.on("open", function () {
     AmpCount >= 2 && connection.write("?20\r");
     AmpCount >= 3 && connection.write("?30\r");
     async.until(
-      function () { return typeof zones[req.zone] !== "undefined"; },
+      function (callback) { callback(null,typeof zones[req.zone] !== "undefined"); },
       function (callback) {
         setTimeout(callback, 10);
       },
@@ -194,5 +196,3 @@ connection.on("open", function () {
 
   app.listen(process.env.PORT || 8181);
 });
-
-
