@@ -139,7 +139,7 @@ Valid attributes are:
     pa (send zone 1 to all outputs)
     power / pr
     mute / mu
-    dt (??)
+    do not disturb / dt
     volume / vo
     treble / tr
     bass / bs
@@ -157,7 +157,7 @@ Update a zone's attribute using the plain-text value of the body.
     pa (send zone 1 to all outputs)
     power / pr
     mute / mu
-    dt (??)
+    do not disturb / dt
     volume / vo
     treble / tr
     bass / bs
