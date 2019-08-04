@@ -3,7 +3,8 @@
   "version": "0.0.2",
   "description": "REST API for the Monoprice MPR-6ZHMAUT Home Audio Distribution System",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "baudrate": "node updateBaudRate.js"
   },
   "repository": {
     "type": "git",
