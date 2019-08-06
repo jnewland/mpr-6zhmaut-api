@@ -11,11 +11,17 @@ Monoprice sells this wacky [6 zone amp](https://www.monoprice.com/product?p_id=1
 ## Environment Variables
 
 `DEVICE = <string>` - the serial port device name (defaults to /dev/ttyUSB0)
+
 `BAUDRATE = <integer>` - the baud rate to use to connect to the device (defaults to 9600)
+
 `PORT = <integer>` - port for API to listen on (defaults to 8181)
+
 `AMPCOUNT = <1|2|3>` - the number of amps (you can slave up to two additional amps) (defaults to 1)
+
 `REQUERY = <true|false>` - re-query the keypads before responding to a /zones request (defaults to false)
+
 `CORS = <true|false>` - respond to a CORS request with an `Access-Control-Allow-Origin=*` (defaults to false)
+
 
 ## Running the server
 
@@ -42,7 +48,9 @@ Notes:
 ### Environment Variables for updateBaudRate.js
 
 `DEVICE = <string>` - the serial port device name (defaults to /dev/ttyUSB0)
+
 `OLDBAUDRATE = <integer>` - the current baud rate of the controller (the rate used to initially connect to the device)
+
 `NEWBAUDRATE = <integer>` - the desired baud rate
 
 ## API
