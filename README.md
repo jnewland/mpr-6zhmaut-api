@@ -2,7 +2,7 @@
 
 Monoprice sells this wacky [6 zone amp](https://www.monoprice.com/product?p_id=10761) with a serial interface. This tiny project wraps the serial interface with a JSON API.
 
-[A detailed walk-through is available](https://chrisschuld.com/2019/07/decorating-the-monoprice-6-zone-home-audio-multizone-controller/) illustrating the process to use this API working on a Raspberry
+[A detailed walk-through is available](https://chrisschuld.com/2019/07/decorating-the-monoprice-6-zone-home-audio-multizone-controller/) illustrating the process to use this API easily on a Raspberry Pi
 
 ## Installation
 
