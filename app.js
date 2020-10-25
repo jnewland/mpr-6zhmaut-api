@@ -49,6 +49,9 @@ connection.on("open", function () {
 
   parser.on('data', function (data) {
     console.log(data);
+    if (data.startsWith('Command Error.')) { // returned from amp device
+      process.exit(-1);
+    }
     var zone = data.toString("ascii").match(/#>(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/);
     if (zone != null) {
       zones[zone[1]] = {
@@ -187,7 +190,7 @@ connection.on("open", function () {
         function (callback) { setTimeout(callback, 10); }
       );
     }
-      writeAttribute();
+    writeAttribute();
     queryControllers();
     async.until(
       function (callback) { callback(null, typeof zones[req.zone] !== "undefined"); },
