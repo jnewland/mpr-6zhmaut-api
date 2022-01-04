@@ -38,8 +38,12 @@ connection.on("open", function () {
   }
 
   connection.write("?10\r");
-  AmpCount >= 2 && connection.write("?20\r");
-  AmpCount >= 3 && connection.write("?30\r");
+  if(AmpCount >= 2){
+    setTimeout(function(){ connection.write("?20\r"); }, 1000);
+  }
+  if(AmpCount >= 3){
+    setTimeout(function(){ connection.write("?30\r"); }, 2000);
+  }
 
   UseCORS && app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
